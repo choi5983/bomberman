@@ -1,0 +1,146 @@
+<html>
+<head>
+	<title>Bomberman</title>
+
+<style>
+	body{
+		margin:0px;
+		background-color:black;
+	}
+
+	#world div.row div{
+		width:16px;
+		height:16px;
+		display:inline-block;
+		margin:0px;
+	}
+	.block {
+		background: url('sprite.png');
+		background-position: -71px -174px;
+	}
+	.ground {
+		background: url('sprite.png');
+		background-position: -122px -175px;	
+	}
+	.brick {
+		background: url('sprite.png');
+		background-position: -87px -175px;	
+	}
+	.bomb {
+		background: url('sprite.png');
+		background-position: -18px -257px;		
+	}
+	.explosion {
+		background: url('sprite.png');
+		background-position: -185px -290px;		
+	}
+	#bomber {
+		position:absolute;
+		background: url('sprite.png');
+		background-position: -1px -39px;
+		width:16px;
+		height:16px;		
+	}
+</style>
+</head>
+
+<body>
+	<div id='world'>
+	</div>
+
+	<div id='bomber'></div>
+
+	<script>
+
+	var bomber = {
+		x: 2,
+		y: 2
+	}
+
+	var bombs = [];
+
+	var world = [
+		[1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+		[1,0,0,0,0,0,0,0,0,0,0,0,0,1],
+		[1,0,0,2,2,2,0,0,0,0,0,0,0,1],
+		[1,0,0,2,0,2,0,0,0,0,0,0,0,1],
+		[1,0,0,2,0,2,0,0,2,2,0,0,0,1],
+		[1,0,0,2,0,0,0,0,2,0,0,0,0,1],
+		[1,0,2,0,0,2,2,2,2,2,0,0,0,1],
+		[1,0,2,0,0,0,0,0,0,0,0,0,0,1],
+		[1,0,2,2,0,0,2,0,0,0,0,0,0,1],
+		[1,0,0,2,0,0,2,0,0,0,0,0,0,1],
+		[1,0,0,2,0,0,2,0,0,0,0,0,0,1],
+		[1,1,1,1,1,1,1,1,1,1,1,1,1,1]
+	]
+
+	document.onkeydown = function(e) {
+		console.log(e.keyCode);
+		if(e.keyCode == 37 && world[bomber.y][bomber.x-1] == 0) {
+			bomber.x--;
+		} else if(e.keyCode == 39 && world[bomber.y][bomber.x+1] == 0) {
+			bomber.x++;
+		} else if(e.keyCode == 38 && world[bomber.y-1][bomber.x] == 0) {
+			bomber.y--;
+		} else if(e.keyCode == 40 && world[bomber.y+1][bomber.x] == 0) {
+			bomber.y++;
+		} else if(e.keyCode == 32) {
+			bombs.push({x: bomber.x, y: bomber.y, fuse: 1000});
+		}	
+	}
+
+	function drawBombs(){
+		for(var i=0; i<bombs.length; i++){
+			world[bombs[i].y][bombs[i].x] = 3;
+			bombs[i].fuse -= 50;
+			if(bombs[i].fuse < 0){
+				world[bombs[i].y][bombs[i].x] = 4;
+			}
+		}
+
+
+	}
+
+	function drawBomber(){
+		document.getElementById('bomber').style.top = bomber.y*16+"px";
+		document.getElementById('bomber').style.left = bomber.x*16+"px";
+	}
+
+	function drawWorld(){
+		var output = '';
+
+		for(var i=0; i<world.length; i++)
+		{
+			output += "<div class='row'>";
+			for(var j=0; j<world[i].length; j++)
+			{
+				if(world[i][j] == 0){
+					output += "<div class='ground'></div>";
+				} else if(world[i][j] == 1){
+					output += "<div class='block'></div>";
+				} else if(world[i][j] == 2){
+					output += "<div class='brick'></div>";
+				} else if(world[i][j] == 3){
+					output += "<div class='bomb'></div>";
+				} else if(world[i][j] == 4){
+					output += "<div class='explosion'></div>";
+				} 
+			}
+			output += "</div>";
+		}
+		document.getElementById('world').innerHTML = output;
+	}
+
+	function gameLoop(){
+		drawWorld();
+		drawBomber();
+		drawBombs();
+	}
+
+	setInterval(gameLoop, 100)
+	
+	</script>
+
+</body>
+
+</html>
